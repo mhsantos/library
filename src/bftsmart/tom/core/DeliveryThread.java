@@ -172,18 +172,22 @@ public final class DeliveryThread extends Thread {
             while (tomLayer.isRetrievingState()) {
                 System.out.println("-- Retrieving State");
                 canDeliver.awaitUninterruptibly();
-                
+                System.out.println("-- CAN DELIVER unlocked: " + tomLayer.getLastExec());
                 if (tomLayer.getLastExec() == -1)
                     System.out.println("-- Ready to process operations");
             }
             try {
                 ArrayList<Decision> decisions = new ArrayList<Decision>();
+//                System.out.println("-- locking decided");
                 decidedLock.lock();
                 if(decided.isEmpty()) {
+//                    System.out.println("-- NOT empty queue");
                     notEmptyQueue.await();
+//                    System.out.println("-- NOT empty queue - done");
                 }
                 decided.drainTo(decisions);
                 decidedLock.unlock();
+//                System.out.println("-- unlocked decided");
                 
                 if (!doWork) break;
                 
@@ -252,6 +256,8 @@ public final class DeliveryThread extends Thread {
             }
 
             /** THIS IS JOAO'S CODE, TO HANDLE STATE TRANSFER */
+//            System.out.println("-- Deliver unlock");
+            
             deliverUnlock();
             /******************************************************************/
         }

@@ -87,6 +87,14 @@ public class DurableStateLog extends StateLog {
         @Override
 	public void addMessageBatch(byte[][] commands, MessageContext[] msgCtx, int consensusId) {
 //		System.out.println("DurableStateLog#addMessageBatch. consensusId: " + consensusId);
+
+/*
+        MessageContext[] consensusIds = new MessageContext[msgCtx.length];
+        for (int i = 0; i < msgCtx.length; i++) {
+          	consensusIds[i] = new MessageContext(-1, -1, null, -1, -1, -1, -1, null, -1, -1,
+        			-1, -1, -1 , msgCtx[i].getConsensusId(), null, null, false);
+        }
+*/
 		CommandsInfo command = new CommandsInfo(commands, msgCtx);
 		if (isToLog) {
 			if(log == null)
@@ -203,10 +211,12 @@ public class DurableStateLog extends StateLog {
 	    		CommandsInfo[] logUpper = fr.getLogState(logPointers.get(requestF1.getLogUpper()), 0, requestF1.getLogUpperSize(), logPath);
 	    		byte[] logLowerBytes = TOMUtil.getBytes(logLower);
 	    		System.out.println(logLower.length + " Log lower bytes size: " + logLowerBytes.length);
-	    		byte[] logLowerHash = TOMUtil.computeHash(logLowerBytes);
+//	    		byte[] logLowerHash = TOMUtil.computeHash(logLowerBytes);
+	    		byte[] logLowerHash = CommandsInfo.computeHash(logLower);
 	    		byte[] logUpperBytes = TOMUtil.getBytes(logUpper);
 	    		System.out.println(logUpper.length + " Log upper bytes size: " + logUpperBytes.length);
-	    		byte[] logUpperHash = TOMUtil.computeHash(logUpperBytes);
+//	    		byte[] logUpperHash = TOMUtil.computeHash(logUpperBytes);
+	    		byte[] logUpperHash = CommandsInfo.computeHash(logUpper);
 	    		CSTState cstState = new CSTState(ckpState, null, null, logLowerHash, null, logUpperHash, lastCheckpointCID, lastCID, this.id);
 	    		return cstState;
 			} else if(id == requestF1.getLogLower()) {

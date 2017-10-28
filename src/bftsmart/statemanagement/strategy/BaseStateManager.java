@@ -120,15 +120,16 @@ public abstract class BaseStateManager implements StateManager {
     }
         
     protected boolean enoughProofs(int cid, LCManager lc) {
-        
+    	System.out.println("waiting CID: " + cid);
         int counter = 0;
         for (CertifiedDecision cDec : senderProofs.values()) {
-                                    
             if (cDec != null && cid == proofIsConsistent(cDec.getConsMessages()) && lc.hasValidProof(cDec)) {
+            	System.out.println("===== incremented proofs counter");
                 counter++;
             }
             
         }
+        System.out.println("=== counter: " + counter + "quorum: " + SVController.getQuorum());
         boolean result = counter > SVController.getQuorum();
         return result;
     }
@@ -250,7 +251,7 @@ public abstract class BaseStateManager implements StateManager {
             for (int key : cids.keySet()) {
                 if (cids.get(key) >= SVController.getQuorum()) {
                     if (key == lastCID) {
-                        System.out.println("-- Replica state is up to date");
+                        System.out.println("Quorum of replicas replied with CID " + key + ". Replica state is up to date");
                         dt.deliverLock();
                         isInitializing = false;
                         tomLayer.setLastExec(key);
@@ -259,6 +260,7 @@ public abstract class BaseStateManager implements StateManager {
                         break;
                     } else {
                         //ask for state
+                        System.out.println("Quorum " + key + " different from my CID " + lastCID + ". Requesting State from other replicas");
                         System.out.println("-- Requesting state from other replicas");
                         lastCID = key + 1;
                         if (waitingCID == -1) {

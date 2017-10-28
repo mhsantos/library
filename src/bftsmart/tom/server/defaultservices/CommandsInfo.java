@@ -16,11 +16,9 @@ limitations under the License.
 package bftsmart.tom.server.defaultservices;
 
 import bftsmart.tom.MessageContext;
+import bftsmart.tom.util.TOMUtil;
 
 import java.io.Serializable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.Arrays;
 
 /**
@@ -56,6 +54,7 @@ public class CommandsInfo implements Serializable {
                             msgCtx[i].getConsensusId(), msgCtx[i].getProof(),
                             msgCtx[i].getFirstInBatch(), msgCtx[i].isNoOp());
                     onlyNeeded[i] = msg;
+//                    System.out.println("CID:" + msgCtx[i].getConsensusId() + ",P:" + msgCtx[i].getProof());
         	}
         }
         this.msgCtx = onlyNeeded;
@@ -125,6 +124,28 @@ public class CommandsInfo implements Serializable {
         }
 
         return hash;
+    }
+    
+    // Computes the hashcode for the array, ignoring the proof, which is non-deterministic
+    public static byte[] computeHash(CommandsInfo[] commands) {
+    	CommandsInfo[] hashTmp = new CommandsInfo[commands.length];
+    	for (int i = 0; i < commands.length; i++) {
+    		byte[][] tmpCmds = commands[i].commands;
+    		MessageContext[] tmpMsgCtxs = new MessageContext[commands[i].msgCtx.length];
+    		for (int j = 0; j < tmpMsgCtxs.length; j++) {
+    			tmpMsgCtxs[j] = new MessageContext(commands[i].msgCtx[j].getSender(),
+                        commands[i].msgCtx[j].getViewID(), commands[i].msgCtx[j].getType(),
+                        commands[i].msgCtx[j].getSession(), commands[i].msgCtx[j].getSequence(),
+                        commands[i].msgCtx[j].getOperationId(), commands[i].msgCtx[j].getReplyServer(),
+                        commands[i].msgCtx[j].getSignature(), commands[i].msgCtx[j].getTimestamp(),
+                        commands[i].msgCtx[j].getNumOfNonces(),  commands[i].msgCtx[j].getSeed(),
+                        commands[i].msgCtx[j].getRegency(), commands[i].msgCtx[j].getLeader(),
+                        commands[i].msgCtx[j].getConsensusId(), null,
+                        commands[i].msgCtx[j].getFirstInBatch(), commands[i].msgCtx[j].isNoOp());
+    		}
+    		hashTmp[i] = new CommandsInfo(tmpCmds, tmpMsgCtxs);
+    	}
+    	return TOMUtil.computeHash(TOMUtil.getBytes(hashTmp));
     }
 
     //These methods were used when the class extended interface Externizable,
