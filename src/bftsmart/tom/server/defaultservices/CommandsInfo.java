@@ -54,7 +54,6 @@ public class CommandsInfo implements Serializable {
                             msgCtx[i].getConsensusId(), msgCtx[i].getProof(),
                             msgCtx[i].getFirstInBatch(), msgCtx[i].isNoOp());
                     onlyNeeded[i] = msg;
-//                    System.out.println("CID:" + msgCtx[i].getConsensusId() + ",P:" + msgCtx[i].getProof());
         	}
         }
         this.msgCtx = onlyNeeded;
@@ -97,11 +96,8 @@ public class CommandsInfo implements Serializable {
                     }
                 }
             }
-            //System.out.print("[CommandsInfo] returnig........");
-            //System.out.println((this.epoch == ci.epoch) + " " + (this.leader == ci.leader));
             return true;
         }
-        //System.out.println("[CommandsInfo] returing FALSE!");
         return false;
     }
 

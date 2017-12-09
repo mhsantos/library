@@ -28,27 +28,13 @@ public class DefaultReplier implements Replier{
 
     private ReplicaContext rc;
     
-    public DefaultReplier() {
-    	System.out.println("---- NEW DefaultReplier");
-    }
-    
     @Override
     public void manageReply(TOMMessage request, MessageContext msgCtx) {
-    	try {
-            rc.getServerCommunicationSystem().send(new int[]{request.getSender()}, request.reply);
-    	}
-    	catch(NullPointerException npe) {
-        	System.out.println("--DefaultReplier rc: " + rc);
-        	System.out.println("--DefaultReplier rc.scs: " + rc.getServerCommunicationSystem());
-        	System.out.println("--DefaultReplier request: " + request);
-        	System.out.println("--DefaultReplier sender: " + request.getSender());
-        	System.out.println("--DefaultReplier reply: " + request.reply);
-    	}
+        rc.getServerCommunicationSystem().send(new int[]{request.getSender()}, request.reply);
     }
 
     @Override
     public void setReplicaContext(ReplicaContext rc) {
-    	System.out.println("---SETTING ReplicaContext: " + rc);
         this.rc = rc;
     }
     

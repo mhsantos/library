@@ -138,12 +138,11 @@ public class ServiceReplica {
         this.replier = (replier != null ? replier : new DefaultReplier());
         this.verifier = verifier;
         this.init();
-        this.recoverer.setReplicaContext(replicaCtx);
         this.replier.setReplicaContext(replicaCtx);
+        this.recoverer.setReplicaContext(replicaCtx);
     }
 
     public void setReplyController(Replier replier) {
-    	System.out.println("------ SETTING REPLY CONTROLLER");
         this.replier = replier;
     }
 
@@ -246,8 +245,6 @@ public class ServiceReplica {
     }
         
     public void restart() {        
-    	System.out.println("--=-=-=-=-=-ServiceReplica. RESTARTING ");
-
         Thread t = new Thread() {
 
             @Override
@@ -472,7 +469,6 @@ public class ServiceReplica {
      * @param conf Total order messaging configuration
      */
     private void initTOMLayer() {
-    	System.out.println("--=-=-=-=-=-ServiceReplica.initTOMLayer()");
         if (tomStackCreated) { // if this object was already initialized, don't do it again
             return;
         }
@@ -510,7 +506,6 @@ public class ServiceReplica {
         tomLayer.start(); // start the layer execution
         tomStackCreated = true;
 
-    	System.out.println("--=-=-=-=-=-ServiceReplica. new ReplicaContext " + cs + ", " + SVController);
         replicaCtx = new ReplicaContext(cs, SVController);
     }
 

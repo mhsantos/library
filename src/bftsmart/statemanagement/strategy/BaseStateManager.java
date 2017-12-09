@@ -120,16 +120,13 @@ public abstract class BaseStateManager implements StateManager {
     }
         
     protected boolean enoughProofs(int cid, LCManager lc) {
-    	System.out.println("waiting CID: " + cid);
         int counter = 0;
         for (CertifiedDecision cDec : senderProofs.values()) {
             if (cDec != null && cid == proofIsConsistent(cDec.getConsMessages()) && lc.hasValidProof(cDec)) {
-            	System.out.println("===== incremented proofs counter");
                 counter++;
             }
             
         }
-        System.out.println("=== counter: " + counter + "quorum: " + SVController.getQuorum());
         boolean result = counter > SVController.getQuorum();
         return result;
     }

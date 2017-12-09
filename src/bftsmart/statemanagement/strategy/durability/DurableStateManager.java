@@ -26,7 +26,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.ReentrantLock;
 
-import bftsmart.tom.core.ExecutionManager;
 import bftsmart.consensus.Consensus;
 import bftsmart.consensus.Epoch;
 import bftsmart.consensus.messages.ConsensusMessage;
@@ -36,6 +35,7 @@ import bftsmart.statemanagement.ApplicationState;
 import bftsmart.statemanagement.SMMessage;
 import bftsmart.statemanagement.strategy.BaseStateManager;
 import bftsmart.tom.core.DeliveryThread;
+import bftsmart.tom.core.ExecutionManager;
 import bftsmart.tom.core.TOMLayer;
 import bftsmart.tom.leaderchange.CertifiedDecision;
 import bftsmart.tom.server.defaultservices.CommandsInfo;
@@ -164,14 +164,14 @@ public class DurableStateManager extends BaseStateManager {
 					SVController.getCurrentView(), tomLayer.getSynchronizer().getLCManager().getLastReg(),
 					tomLayer.execManager.getCurrentLeader());
 
-//			if(worker == null) {
+			if(worker == null) {
 				StateSenderServer stateServer = new StateSenderServer(port);
 				stateServer.setRecoverable(dt.getRecoverer());
 				stateServer.setRequest(cstConfig);
 				new Thread(stateServer).start();
-//				worker = new Thread(stateServer);
-//				worker.start();
-//			}
+				worker = new Thread(stateServer);
+				worker.start();
+			}
 
 			tomLayer.getCommunication().send(targets, reply);
 
@@ -203,7 +203,7 @@ public class DurableStateManager extends BaseStateManager {
 					senderRegencies.put(reply.getSender(), reply.getRegency());
 					senderLeaders.put(reply.getSender(), reply.getLeader());
 					senderViews.put(reply.getSender(), reply.getView());
-//					senderProofs.put(msg.getSender(), msg.getState().getCertifiedDecision(SVController));
+					senderProofs.put(msg.getSender(), msg.getState().getCertifiedDecision(SVController));
 					if (enoughRegencies(reply.getRegency()))
 						currentRegency = reply.getRegency();
 					if (enoughLeaders(reply.getLeader()))
