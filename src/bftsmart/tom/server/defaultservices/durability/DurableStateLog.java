@@ -175,7 +175,12 @@ public class DurableStateLog extends StateLog {
 		try {
 			if(log != null)
 				log.close();
-			new File(logPath).delete();
+			if (logPath != null) {
+				File logFile = new File(logPath);
+				if (logFile.exists()) {
+					logFile.delete();
+				}
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

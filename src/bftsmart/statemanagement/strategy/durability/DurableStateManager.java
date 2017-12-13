@@ -84,8 +84,7 @@ public class DurableStateManager extends BaseStateManager {
 
 		int myProcessId = SVController.getStaticConf().getProcessId();
 		int[] otherProcesses = SVController.getCurrentViewOtherAcceptors();
-		int globalCkpPeriod = SVController.getStaticConf()
-				.getGlobalCheckpointPeriod();
+		int globalCkpPeriod = SVController.getStaticConf().getGlobalCheckpointPeriod();
 
 		CSTRequestF1 cst = new CSTRequestF1(waitingCID);
 		cst.defineReplicas(otherProcesses, globalCkpPeriod, myProcessId);
@@ -164,14 +163,10 @@ public class DurableStateManager extends BaseStateManager {
 					SVController.getCurrentView(), tomLayer.getSynchronizer().getLCManager().getLastReg(),
 					tomLayer.execManager.getCurrentLeader());
 
-			if(worker == null) {
-				StateSenderServer stateServer = new StateSenderServer(port);
-				stateServer.setRecoverable(dt.getRecoverer());
-				stateServer.setRequest(cstConfig);
-				new Thread(stateServer).start();
-				worker = new Thread(stateServer);
-				worker.start();
-			}
+			StateSenderServer stateServer = new StateSenderServer(port);
+			stateServer.setRecoverable(dt.getRecoverer());
+			stateServer.setRequest(cstConfig);
+			new Thread(stateServer).start();
 
 			tomLayer.getCommunication().send(targets, reply);
 
@@ -203,7 +198,7 @@ public class DurableStateManager extends BaseStateManager {
 					senderRegencies.put(reply.getSender(), reply.getRegency());
 					senderLeaders.put(reply.getSender(), reply.getLeader());
 					senderViews.put(reply.getSender(), reply.getView());
-					senderProofs.put(msg.getSender(), msg.getState().getCertifiedDecision(SVController));
+//					senderProofs.put(msg.getSender(), msg.getState().getCertifiedDecision(SVController));
 					if (enoughRegencies(reply.getRegency()))
 						currentRegency = reply.getRegency();
 					if (enoughLeaders(reply.getLeader()))
@@ -232,11 +227,13 @@ public class DurableStateManager extends BaseStateManager {
 				Socket clientSocket;
 				ApplicationState stateReceived = null;
 				try {
+					System.out.println("opening client socket to " + address.getHostName() + ", port " + address.getPort());
 					clientSocket = new Socket(address.getHostName(),
 							address.getPort());
 					ObjectInputStream in = new ObjectInputStream(
 							clientSocket.getInputStream());
 					stateReceived = (ApplicationState) in.readObject();
+					clientSocket.close();
 				} catch (UnknownHostException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

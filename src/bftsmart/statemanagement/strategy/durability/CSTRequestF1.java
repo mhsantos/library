@@ -114,7 +114,6 @@ public class CSTRequestF1 extends CSTRequest {
 	    	logUpperSize = ((cid + 1) % ckpPeriod) + ckpPeriod;
 		} else if((oldestCkpReplica + 2) % N == me) {
 	    	logLowerSize = 2 * ckpPeriod;
-		} else {
 		}
 		for(int i = 0; i < others.length; i++) {
 			if(others[i] == oldestCkpReplica)

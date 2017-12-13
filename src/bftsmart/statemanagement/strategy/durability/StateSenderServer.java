@@ -47,6 +47,7 @@ public class StateSenderServer implements Runnable {
 	public StateSenderServer(int port) {
 		try {
 			server = new ServerSocket(port);
+			System.out.println("listening to port " + port);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -61,6 +62,7 @@ public class StateSenderServer implements Runnable {
 			state = coordinator.getState(request);
 			sender.setState(state);
 			new Thread(sender).start();
+			server.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
