@@ -42,10 +42,10 @@ public class CSTRequestF1 extends CSTRequest {
 		super(cid);
 	}
 	
-//	public int getCkpPeriod() {
-//		return this.ckpPeriod;
-//	}
-//
+	public int getCkpPeriod() {
+		return this.ckpPeriod;
+	}
+	
 	public int getLogUpper() {
 		return logUpper;
 	}
@@ -79,18 +79,24 @@ public class CSTRequestF1 extends CSTRequest {
 	 */
 	public void defineReplicas(int[] otherReplicas, int globalCkpPeriod, int me) {
     	int N = otherReplicas.length + 1; // The total number of replicas is the others plus me 
+    	if (cid < globalCkpPeriod) {
+    		logUpper = otherReplicas[0];
+    		logLower = otherReplicas[1];
+    		checkpointReplica = otherReplicas[2];
+    		logUpperSize = cid + 1;
+    		return;
+    	}
     	ckpPeriod = globalCkpPeriod / N;
 //    	logLowerSkip = ckpPeriod;
     	logLowerSize = ckpPeriod;
     	logUpperSize = (cid + 1) % ckpPeriod;
-    	
+
     	// position of the replica with the oldest checkpoint in the others array
     	int oldestReplicaPosition = getOldest(otherReplicas, cid, globalCkpPeriod, me);
     	
     	logLower = otherReplicas[oldestReplicaPosition];
     	checkpointReplica = otherReplicas[(oldestReplicaPosition + 1) % otherReplicas.length];
     	logUpper = otherReplicas[(oldestReplicaPosition + 2) % otherReplicas.length];
-    	
     }
 	
 	/**
